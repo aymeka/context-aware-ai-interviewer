@@ -1,0 +1,24 @@
+# === Temel ===
+flask
+requests
+beautifulsoup4
+google-generativeai
+
+# === Transformers ve NLP ===
+transformers>=4.39.0
+evaluate
+datasets
+nltk
+scikit-learn
+torch>=2.0.0
+accelerate
+
+# === Scraping ve Parsing ===
+bs4  # beautifulsoup4 için kısayol
+lxml
+
+# === Grafik (Eğitim sonrası grafik çizimi için, opsiyonel) ===
+matplotlib
+
+# === Diğer ===
+tqdm

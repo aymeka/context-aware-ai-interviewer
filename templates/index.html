@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Röportaj Asistanı</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .chat-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 500px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #chat-box {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+
+        form input, form select, form button {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin-bottom: 0.75rem;
+        }
+
+        .message strong {
+            display: block;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <h2>🎤 Röportaj Asistanı</h2>
+    <div id="chat-box"></div>
+    <form id="chat-form">
+        <input type="text" id="message" placeholder="Cevabınızı yazın..." required>
+        <input type="text" id="person" placeholder="Ad Soyad (örn. Tarkan Tevetoglu)" value="Tarkan">
+        <select id="gender">
+            <option value="erkek">Erkek</option>
+            <option value="kadın">Kadın</option>
+            <option value="diğer">Diğer</option>
+        </select>
+        <input type="text" id="role" placeholder="Meslek" value="Müzisyen">
+        <select id="mood">
+            <option>Mutlu</option>
+            <option>Üzgün</option>
+            <option>Nötr</option>
+            <option>Rahatsız</option>
+            <option>Şaşkın</option>
+        </select>
+        <button type="submit">Gönder</button>
+    </form>
+</div>
+
+<script>
+let state = "initial";
+
+document.getElementById("chat-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById("message").value;
+    const person = document.getElementById("person").value;
+    const gender = document.getElementById("gender").value;
+    const role = document.getElementById("role").value;
+    const mood = document.getElementById("mood").value;
+
+    if (msg.trim() !== "")
+        addMessage("Siz", msg);
+
+    const res = await fetch("/ask", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: msg, person, gender, role, mood, state})
+    });
+
+    const data = await res.json();
+    addMessage("Asistan", data.reply);
+    state = data.state || "followup";
+
+    document.getElementById("message").value = "";
+});
+
+function addMessage(sender, text) {
+    const chatBox = document.getElementById("chat-box");
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message");
+    msgDiv.innerHTML = `<strong>${sender}:</strong>${text}`;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+</script>
+</body>
+</html>
